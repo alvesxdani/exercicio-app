@@ -1,9 +1,11 @@
-import { SafeAreaView, Text } from 'react-native'
+import { verifyInstallation } from 'nativewind'
+import { SafeAreaView, View } from 'react-native'
 
 export default function Home() {
+  verifyInstallation()
   return (
     <SafeAreaView>
-      <Text>Página inicial</Text>
+      <View className="w-10 h-10 bg-blue-500" />
     </SafeAreaView>
   )
 }
