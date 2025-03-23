@@ -41,6 +41,10 @@ export default function Home() {
     )
   }, [])
 
+  const handleDeleleTask = useCallback((id: number) => {
+    setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id))
+  }, [])
+
   return (
     <SafeAreaView className="grid gap-4 p-4">
       <Heading size="xl" bold className="text-center p-4">
@@ -58,11 +62,19 @@ export default function Home() {
         </Input>
 
         <Button size="lg" className="items-center" onPress={addTask}>
-          <Ionicons name="add" className="!text-white" size={14} />
+          <Ionicons
+            name="add"
+            className="!text-white !font-semibold"
+            size={14}
+          />
         </Button>
       </Box>
 
-      <TaskList data={tasks} onTaskPressed={handleSetTaskCompleted} />
+      <TaskList
+        data={tasks}
+        onTaskPressed={handleSetTaskCompleted}
+        onTaskDelete={handleDeleleTask}
+      />
     </SafeAreaView>
   )
 }
