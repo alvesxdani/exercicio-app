@@ -3,6 +3,7 @@ import { Box } from '@/components/ui/box'
 import { Button } from '@/components/ui/button'
 import { Heading } from '@/components/ui/heading'
 import { Input, InputField } from '@/components/ui/input'
+import { Toast, ToastDescription, useToast } from '@/components/ui/toast'
 import { Task } from '@/types/task'
 import Ionicons from '@expo/vector-icons/Ionicons'
 import { useCallback, useState } from 'react'
@@ -17,10 +18,36 @@ export default function Home() {
 
   const [textTask, setTextTask] = useState<string>('')
 
+  const toast = useToast()
+
+  const toastError = () =>
+    toast.show({
+      placement: 'top',
+      duration: 3000,
+      render: () => (
+        <Toast action="error" variant="solid" className="mt-4">
+          <ToastDescription>
+            Digite o texto da tarefa antes de enviar!
+          </ToastDescription>
+        </Toast>
+      ),
+    })
+
+  const toastSuccess = () =>
+    toast.show({
+      placement: 'top',
+      duration: 3000,
+      render: () => (
+        <Toast action="success" variant="solid" className="mt-4">
+          <ToastDescription>Tarefa adicionada com sucesso!</ToastDescription>
+        </Toast>
+      ),
+    })
+
   function addTask() {
-    if (textTask === '') {
-      return
-    } else {
+    if (textTask === '') toastError()
+
+    if (textTask.length > 0) {
       setTasks((prevTasks) => [
         ...prevTasks,
         {
@@ -29,8 +56,9 @@ export default function Home() {
           completed: false,
         },
       ])
+      setTextTask(() => '')
+      toastSuccess()
     }
-    setTextTask(() => '')
   }
 
   const handleSetTaskCompleted = useCallback((id: number) => {
