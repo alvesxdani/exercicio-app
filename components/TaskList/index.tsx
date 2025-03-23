@@ -1,14 +1,18 @@
 import { Task } from '@/types/task'
 import Ionicons from '@expo/vector-icons/Ionicons'
 import { FlatList } from 'react-native'
+import { Box } from '../ui/box'
+import { Button } from '../ui/button'
 import { Checkbox, CheckboxIndicator, CheckboxLabel } from '../ui/checkbox'
 
 export default function TaskList({
   data,
   onTaskPressed,
+  onTaskDelete,
 }: {
   data: Task
   onTaskPressed: (id: number) => void
+  onTaskDelete: (id: number) => void
 }) {
   const checkIcon = <Ionicons name="checkmark" />
 
@@ -16,20 +20,29 @@ export default function TaskList({
     <FlatList
       data={data}
       renderItem={({ item }) => (
-        <Checkbox
-          size="lg"
-          isChecked={item.completed}
-          value="true"
-          onChange={() => onTaskPressed(item.id)}
-          className="mb-2"
-        >
-          <CheckboxIndicator>
-            {item.completed && (
-              <Ionicons name="checkmark" className="!text-white" />
-            )}
-          </CheckboxIndicator>
-          <CheckboxLabel>{item.text}</CheckboxLabel>
-        </Checkbox>
+        <Box className="flex flex-row justify-between mb-2">
+          <Checkbox
+            size="lg"
+            isChecked={item.completed}
+            value="true"
+            onChange={() => onTaskPressed(item.id)}
+          >
+            <CheckboxIndicator>
+              {item.completed && (
+                <Ionicons name="checkmark" className="!text-white" />
+              )}
+            </CheckboxIndicator>
+            <CheckboxLabel>{item.text}</CheckboxLabel>
+          </Checkbox>
+
+          <Button
+            variant="link"
+            size="xl"
+            onPress={() => onTaskDelete(item.id)}
+          >
+            <Ionicons name="trash-outline" size={14} />
+          </Button>
+        </Box>
       )}
     />
   )
