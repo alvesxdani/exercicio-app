@@ -1,8 +1,13 @@
 import { Task } from '@/types/task'
 import Ionicons from '@expo/vector-icons/Ionicons'
-import { FlatList, ToastAndroid } from 'react-native'
-import { Box } from '../ui/box'
-import { Button } from '../ui/button'
+import { Animated, FlatList } from 'react-native'
+import {
+  Directions,
+  FlingGestureHandler,
+  FlingGestureHandlerEventPayload,
+  HandlerStateChangeEvent,
+  State,
+} from 'react-native-gesture-handler'
 import { Checkbox, CheckboxIndicator, CheckboxLabel } from '../ui/checkbox'
 
 export default function TaskList({
@@ -14,41 +19,57 @@ export default function TaskList({
   onTaskPressed: (id: number) => void
   onTaskDelete: (id: number) => void
 }) {
-  const checkIcon = <Ionicons name="checkmark" />
+  const handleSwipe = (id: number) => ({
+    [id]: new Animated.Value(0),
+  })
+
+  const handleFling = (
+    event: HandlerStateChangeEvent<FlingGestureHandlerEventPayload>,
+    id: number,
+  ) => {
+    if (event.nativeEvent.state === State.ACTIVE) {
+      Animated.timing(handleSwipe(id)[id], {
+        toValue: 500,
+        duration: 500,
+        useNativeDriver: true,
+      }).start(() => onTaskDelete(id))
+    }
+  }
 
   return (
     <FlatList
       data={data}
       renderItem={({ item }) => (
-        <Box className="flex flex-row justify-between mb-2">
-          <Checkbox
-            size="lg"
-            isChecked={item.completed}
-            value="true"
-            onChange={() => onTaskPressed(item.id)}
+        <FlingGestureHandler
+          direction={Directions.RIGHT}
+          onHandlerStateChange={(event) => handleFling(event, item.id)}
+        >
+          <Animated.View
+            className={`mb-2 bg-white p-3`}
+            style={{
+              elevation: 3,
+              shadowColor: '#000',
+              shadowOpacity: 0.2,
+              shadowOffset: { width: 0, height: 2 },
+              shadowRadius: 1.41,
+              transform: [{ translateX: handleSwipe(item.id)[item.id] }],
+            }}
           >
-            <CheckboxIndicator>
-              {item.completed && (
-                <Ionicons name="checkmark" className="!text-white" />
-              )}
-            </CheckboxIndicator>
-            <CheckboxLabel>{item.text}</CheckboxLabel>
-          </Checkbox>
-
-          <Button
-            variant="link"
-            size="xl"
-            onPress={() => onTaskDelete(item.id)}
-            onLongPress={() =>
-              ToastAndroid.show('Deletar tarefa', ToastAndroid.SHORT)
-            }
-          >
-            <Ionicons
-              name="trash-outline"
-              className="!text-xl mr-4 !color-error-500"
-            />
-          </Button>
-        </Box>
+            <Checkbox
+              size="lg"
+              isChecked={item.completed}
+              value="true"
+              onChange={() => onTaskPressed(item.id)}
+            >
+              <CheckboxIndicator>
+                {item.completed && (
+                  <Ionicons name="checkmark" className="!text-white" />
+                )}
+              </CheckboxIndicator>
+              <CheckboxLabel>{item.text}</CheckboxLabel>
+            </Checkbox>
+          </Animated.View>
+        </FlingGestureHandler>
       )}
     />
   )
