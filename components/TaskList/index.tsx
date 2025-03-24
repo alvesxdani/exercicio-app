@@ -1,6 +1,6 @@
 import { Task } from '@/types/task'
 import Ionicons from '@expo/vector-icons/Ionicons'
-import { FlatList } from 'react-native'
+import { FlatList, ToastAndroid } from 'react-native'
 import { Box } from '../ui/box'
 import { Button } from '../ui/button'
 import { Checkbox, CheckboxIndicator, CheckboxLabel } from '../ui/checkbox'
@@ -39,8 +39,14 @@ export default function TaskList({
             variant="link"
             size="xl"
             onPress={() => onTaskDelete(item.id)}
+            onLongPress={() =>
+              ToastAndroid.show('Deletar tarefa', ToastAndroid.SHORT)
+            }
           >
-            <Ionicons name="trash-outline" size={14} />
+            <Ionicons
+              name="trash-outline"
+              className="!text-xl mr-4 !color-error-500"
+            />
           </Button>
         </Box>
       )}
