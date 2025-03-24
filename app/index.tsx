@@ -44,7 +44,7 @@ export default function Home() {
       ),
     })
 
-  function addTask() {
+  function handleAddTask() {
     if (textTask === '') toastError()
 
     if (textTask.length > 0) {
@@ -85,11 +85,11 @@ export default function Home() {
             value={textTask}
             placeholder="Digite uma tarefa aqui"
             onChangeText={setTextTask}
-            onSubmitEditing={() => addTask()}
+            onSubmitEditing={() => handleAddTask()}
           />
         </Input>
 
-        <Button size="lg" className="items-center" onPress={addTask}>
+        <Button size="lg" className="items-center" onPress={handleAddTask}>
           <Ionicons
             name="add"
             className="!text-white !font-semibold"
