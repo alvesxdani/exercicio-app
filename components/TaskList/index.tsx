@@ -1,5 +1,6 @@
 import { Task } from '@/types/task'
 import Ionicons from '@expo/vector-icons/Ionicons'
+import { useRef } from 'react'
 import { Animated, FlatList } from 'react-native'
 import {
   Directions,
@@ -19,20 +20,28 @@ export default function TaskList({
   onTaskPressed: (id: number) => void
   onTaskDelete: (id: number) => void
 }) {
-  const handleSwipe = (id: number) => ({
-    [id]: new Animated.Value(0),
-  })
+  const swipeValues = useRef(new Map<number, Animated.Value>()).current
+
+  const getSwipeValue = (id: number) => {
+    if (!swipeValues.has(id)) {
+      swipeValues.set(id, new Animated.Value(0))
+    }
+    return swipeValues.get(id)!
+  }
 
   const handleFling = (
     event: HandlerStateChangeEvent<FlingGestureHandlerEventPayload>,
     id: number,
   ) => {
     if (event.nativeEvent.state === State.ACTIVE) {
-      Animated.timing(handleSwipe(id)[id], {
+      Animated.timing(getSwipeValue(id), {
         toValue: 500,
         duration: 500,
         useNativeDriver: true,
-      }).start(() => onTaskDelete(id))
+      }).start(() => {
+        onTaskDelete(id)
+        swipeValues.delete(id)
+      })
     }
   }
 
@@ -52,7 +61,7 @@ export default function TaskList({
               shadowOpacity: 0.2,
               shadowOffset: { width: 0, height: 2 },
               shadowRadius: 1.41,
-              transform: [{ translateX: handleSwipe(item.id)[item.id] }],
+              transform: [{ translateX: getSwipeValue(item.id) }],
             }}
           >
             <Checkbox
